@@ -100,3 +100,47 @@
         fig.show()
 ```
 </details>
+
+双侧检测
+
+<details>
+<summary>点击展开代码</summary>
+    
+``` python
+    print("1、确定进行检验的假设（H0, H1），H0：幸存者与罹难者的年龄 没有显著差异，H1：幸存者与罹难者的年龄 有显著差异")
+    print("2、选择检验统计量")
+    df = pd.read_csv("./Titanic/train.csv")
+    df_survivors = df[df["Survived"] == 1]
+    df_nonsurvivors = df[df["Survived"] == 0]
+    # 过滤年龄缺失的行
+    dist = df["Age"].dropna()
+    dist_a = df_survivors['Age'].dropna()
+    dist_b = df_nonsurvivors['Age'].dropna()
+
+    print("3、确定拒绝域 𝛂 = 0.05")
+    print("4、求出检验统计量的P值")
+    t_stat, p_value = stats.ttest_ind(dist_a, dist_b)
+    print("     ----- T检测结果 -----")
+    print("     T stat. = " + str(t_stat))
+    print("     P value = " + str(p_value))  # P-value > 0.05，接受原假设，<0.05拒绝原假设
+    print("5、查看样本结果")
+    if p_value > 0.05:
+        print("     p值大于0.05接受H0拒绝H1 幸存者组与罹难者组年龄均值不存在显著差异")
+    else:
+        print("     p值小于0.05拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异")
+    print("")
+```
+
+</details>
+
+结果：
+
+    1、假设（H0, H1），H0：幸存者与罹难者的年龄 没有显著差异，H1：幸存者与罹难者的年龄 有显著差异
+    2、选择检验统计量
+    3、确定拒绝域 𝛂 = 0.05
+    4、求出检验统计量的P值
+         ----- T检测结果 -----
+         T stat. = -2.06668694625381
+         P value = 0.03912465401348249
+    5、查看样本结果
+         拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异
