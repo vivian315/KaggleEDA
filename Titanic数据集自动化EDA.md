@@ -48,3 +48,55 @@
 * 对于Pclass=1的乘客，其Fare较高 ，Pclass=2 次之，Pclass=3最低。从逻辑上讲，Pclass的分类是由乘客票价Fare的值定义的。
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p1.png?raw=true)
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/pr1.png?raw=true)![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/pr2.png?raw=true)
+
+## 2、更多探索
+在进入建模部分之前，让我们先看看其它绘图，这些图形为我们提供与自动化EDA不同的视角。这可能给我们更多的启发，帮助我们了解在灾难中幸存下来的乘客和没有幸存下来的乘客之间的差异。
+以下可视化效果，我们使用Plotly库完成
+
+* 首先，使用Violin图来查看两组年龄之间的差异
+
+![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/P21.png?raw=true)
+
+<details>
+    <summary>点击展开代码</summary>
+    
+``` python 
+    
+        df = pd.read_csv("./Titanic/train.csv")
+        df_survivors = df[df["Survived"] == 1]
+        df_nonsurvivors = df[df["Survived"] == 0]
+
+        # Violin 图填充数据
+        violin_survivors = go.Violin(
+            y=df_survivors["Age"],
+            x=df_survivors["Survived"],
+            name="Survivors",
+            marker_color="forestgreen",
+            box_visible=True)
+
+        violin_nonsurvivors = go.Violin(
+            y=df_nonsurvivors["Age"],
+            x=df_nonsurvivors["Survived"],
+            name="Non-Survivors",
+            marker_color="darkred",
+            box_visible=True)
+
+        data = [violin_nonsurvivors, violin_survivors]
+
+        # 设置背景色标题等
+        layout = go.Layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            title="幸存者年龄 vs 罹难者年龄",
+            xaxis=dict(
+                title="幸存否"
+            ),
+            yaxis=dict(
+                title="年龄"
+            )
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+        fig.show()
+```
+</details>
