@@ -120,14 +120,14 @@
     print("3、确定拒绝域 𝛂 = 0.05")
     print("4、求出检验统计量的P值")
     t_stat, p_value = stats.ttest_ind(dist_a, dist_b)
-    print("     ----- T检测结果 -----")
-    print("     T stat. = " + str(t_stat))
-    print("     P value = " + str(p_value))  # P-value > 0.05，接受原假设，<0.05拒绝原假设
+    print("\t\t----- T检测结果 -----")
+    print("\t\tT stat. = " + str(t_stat))
+    print("\t\tP value = " + str(p_value))  # P-value > 0.05，接受原假设，<0.05拒绝原假设
     print("5、查看样本结果")
     if p_value > 0.05:
-        print("     p值大于0.05接受H0拒绝H1 幸存者组与罹难者组年龄均值不存在显著差异")
+        print("\t\tp值大于0.05接受H0拒绝H1 幸存者组与罹难者组年龄均值不存在显著差异")
     else:
-        print("     p值小于0.05拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异")
+        print("\t\tp值小于0.05拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异")
     print("")
 ```
 
