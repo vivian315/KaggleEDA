@@ -53,7 +53,9 @@
 在进入建模部分之前，让我们先看看其它绘图，这些图形为我们提供与自动化EDA不同的视角。这可能给我们更多的启发，帮助我们了解在灾难中幸存下来的乘客和没有幸存下来的乘客之间的差异。
 以下可视化效果，我们使用Plotly库完成
 
-* 首先，使用Violin图来查看幸存者与罹难者组年龄之间的差异
+``` diff
++ * 首先，使用Violin图来查看幸存者与罹难者组年龄之间的差异
+```
 
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/P21.png?raw=true)
 
@@ -144,8 +146,9 @@
          P value = 0.03912465401348249
     5、查看样本结果
          拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异
-         
-* 用饼图展示幸存者组和罹难者组的性别,pclass组成情况
+``` diff         
++ * 幸存者组和罹难者组的性别,pclass组成情况
+```
 
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p22.png?raw=true)
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p23.png?raw=true)
@@ -245,11 +248,14 @@
 
 从上面显示的饼图中我们可以注意到：在罹难的乘客中近68%的乘客在Pclass3中。而幸存者中有近35%的乘客在Pclass3里。同样，幸存的乘客时，其中约40%的乘客在Pclass1。在罹难者中，只有14.6%的人处于Pclass1。看来Pclass与乘客在事故中幸存下来的事实之间有某种关系。让我们进一步探索
 
-* 幸存者组与罹难者组的船票价格分析
+``` diff
++ * 幸存者组与罹难者组的船票价格分析
+```
+
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p24.png?raw=true)
    
     Z检测与T检测结果
-    ----- Z检测 -----
+    ----- Z检测 -----    
     T stat. = 7.939191660871055
     P value = 2.035031103573989e-15
 
