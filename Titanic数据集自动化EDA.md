@@ -242,3 +242,71 @@
 ```
     
 </details>
+
+从上面显示的饼图中我们可以注意到：在罹难的乘客中近68%的乘客在Pclass3中。而幸存者中有近35%的乘客在Pclass3里。同样，幸存的乘客时，其中约40%的乘客在Pclass1。在罹难者中，只有14.6%的人处于Pclass1。看来Pclass与乘客在事故中幸存下来的事实之间有某种关系。让我们进一步探索
+
+* 幸存者组与罹难者组的船票价格分析
+![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p24.png?raw=true)
+   
+    Z检测与T检测结果
+    ----- Z检测 -----
+    T stat. = 7.939191660871055
+    P value = 2.035031103573989e-15
+
+    ----- T检测 -----
+    T stat. = 7.939191660871055
+    P value = 6.120189341924198e-15
+
+<details>
+    <summary> 点击展开代码 </summary>
+    
+``` python
+
+    fare_survivors_box = go.Box(
+        y=df_survivors["Fare"],
+        name="幸存者",
+        marker=dict(color="navy")
+    )
+
+    fare_nonsurvivors_box = go.Box(
+        y=df_nonsurvivors["Fare"],
+        name="罹难者",
+        marker=dict(color="steelblue")
+    )
+
+    data = [fare_nonsurvivors_box, fare_survivors_box]
+
+    layout = go.Layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        title="幸存者与罹难者的【船票价格】对比",
+        barmode="stack",
+        yaxis=dict(
+            title="船票价格分布"
+        )
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    fig.show()
+
+    # 去掉Fare为空的行
+    dist_c = df_survivors['Fare'].dropna()
+    dist_d = df_nonsurvivors['Fare'].dropna()
+
+    # Z-test: 检查分布均值（幸存者票价与非幸存者票价）在统计上是否不同
+    t_stat_3, p_value_3 = ztest(dist_c, dist_d)
+    print("----- Z检测 -----")
+    print("T stat. = " + str(t_stat_3))
+    print("P value = " + str(p_value_3))  # P-value< 0.05
+
+    print("")
+
+    # T-test: 检查分布均值（幸存者票价与非幸存者票价）在统计上是否不同
+    t_stat_4, p_value_4 = stats.ttest_ind(dist_c, dist_d)
+    print("----- T检测 -----")
+    print("T stat. = " + str(t_stat_4))
+    print("P value = " + str(p_value_4))  # P-value < 0.05
+```
+</details
+
+查看票价的分布和假设检验，比较幸存者和罹难者我们可以再次观察到两组之间在统计学上存在显著差异。在查看箱线图时，我们可以看到与罹难者的票价值相比，幸存者的票价值通常较高。此信息可能与我们之前在饼图图上看到的"Pclass"百分比有关。
