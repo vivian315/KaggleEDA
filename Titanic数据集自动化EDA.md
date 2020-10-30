@@ -53,7 +53,7 @@
 在进入建模部分之前，让我们先看看其它绘图，这些图形为我们提供与自动化EDA不同的视角。这可能给我们更多的启发，帮助我们了解在灾难中幸存下来的乘客和没有幸存下来的乘客之间的差异。
 以下可视化效果，我们使用Plotly库完成
 
-* 首先，使用Violin图来查看两组年龄之间的差异
+* 首先，使用Violin图来查看幸存者与罹难者组年龄之间的差异
 
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/P21.png?raw=true)
 
@@ -144,3 +144,101 @@
          P value = 0.03912465401348249
     5、查看样本结果
          拒绝H0接受H1，幸存者组与罹难者组年龄均值存在显著差异
+         
+* 用饼图展示幸存者组和罹难者组的性别,pclass组成情况
+
+![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p22.png?raw=true)
+![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p23.png?raw=true)
+
+<details>
+    <summary>点击展开性别分析代码</summary>
+    
+``` python
+    # 在幸存者中按性别计数
+    df_survivors_sex = df_survivors["Sex"].value_counts()
+    df_survivors_sex = pd.DataFrame({"Sex": df_survivors_sex.index, "count": df_survivors_sex.values})
+
+    # 在罹难者中按性别计数
+    df_nonsurvivors_sex = df_nonsurvivors["Sex"].value_counts()
+    df_nonsurvivors_sex = pd.DataFrame({"Sex": df_nonsurvivors_sex.index, "count": df_nonsurvivors_sex.values})
+
+    pie_survivors_sex = go.Pie(
+        labels=df_survivors_sex["Sex"],
+        values=df_survivors_sex["count"],
+        domain=dict(x=[0, 0.5]),
+        name="幸存者",
+        hole=0.5,
+        marker=dict(colors=["violet", "cornflowerblue"], line=dict(color="#000000", width=2))
+    )
+
+    pie_nonsurvivors_sex = go.Pie(
+        labels=df_nonsurvivors_sex["Sex"],
+        values=df_nonsurvivors_sex["count"],
+        domain=dict(x=[0.5, 1.0]),
+        name="罹难者",
+        hole=0.5,
+        marker=dict(colors=["cornflowerblue", "violet"], line=dict(color="#000000", width=2))
+    )
+
+    data = [pie_survivors_sex, pie_nonsurvivors_sex]
+
+    layout = go.Layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        title="幸存者与罹难者的性别百分比",
+        annotations=[dict(text="幸存者", x=0.18, y=0.5, font_size=15, showarrow=False),
+                     dict(text="罹难者", x=0.85, y=0.5, font_size=15, showarrow=False)]
+    )
+    fig = go.Figure(data=data, layout=layout)
+    fig.show()
+```
+</details>
+
+<details>
+    <summary>点击展开pclass分析代码</summary>
+
+``` python
+
+    # 幸存者组按Pclass计数
+    df_survivors_pclass = df_survivors["Pclass"].value_counts()
+    df_survivors_pclass = pd.DataFrame({"Pclass": df_survivors_pclass.index, "count": df_survivors_pclass.values})
+
+    # 罹难者组按Pclass计数
+    df_nonsurvivors_pclass = df_nonsurvivors["Pclass"].value_counts()
+    df_nonsurvivors_pclass = pd.DataFrame(
+        {"Pclass": df_nonsurvivors_pclass.index, "count": df_nonsurvivors_pclass.values})
+
+    pie_survivors_pclass = go.Pie(
+        labels=df_survivors_pclass["Pclass"],
+        values=df_survivors_pclass["count"],
+        domain=dict(x=[0, 0.5]),
+        name="幸存者组",
+        hole=0.5,
+        marker=dict(colors=["#636EFA", "#EF553B", "#00CC96"], line=dict(color="#000000", width=2))
+    )
+
+    pie_nonsurvivors_pclass = go.Pie(
+        labels=df_nonsurvivors_pclass["Pclass"],
+        values=df_nonsurvivors_pclass["count"],
+        domain=dict(x=[0.5, 1.0]),
+        name="罹难者组",
+        hole=0.5,
+        marker=dict(colors=["#EF553B", "#00CC96", "#636EFA"], line=dict(color="#000000", width=2))
+    )
+
+    data = [pie_survivors_pclass, pie_nonsurvivors_pclass]
+
+    layout = go.Layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        title="幸存者与罹难者的pclass百分比",
+        annotations=[dict(text="幸存者组", x=0.18, y=0.5, font_size=15, showarrow=False),
+                     dict(text="罹难者组", x=0.85, y=0.5, font_size=15, showarrow=False)]
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+
+    fig.show()
+```
+    
+</details>
