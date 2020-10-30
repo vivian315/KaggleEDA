@@ -49,7 +49,7 @@
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p1.png?raw=true)
 ![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/pr1.png?raw=true)![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/pr2.png?raw=true)
 
-## 2、更多探索
+### 更多探索
 在进入建模部分之前，让我们先看看其它绘图，这些图形为我们提供与自动化EDA不同的视角。这可能给我们更多的启发，帮助我们了解在灾难中幸存下来的乘客和没有幸存下来的乘客之间的差异。
 以下可视化效果，我们使用Plotly库完成
 
@@ -316,3 +316,32 @@
 </details
 
 查看票价的分布和假设检验，比较幸存者和罹难者我们可以再次观察到两组之间在统计学上存在显著差异。在查看箱线图时，我们可以看到与罹难者的票价值相比，幸存者的票价值通常较高。此信息可能与我们之前在饼图图上看到的"Pclass"百分比有关。
+
+### PPS (Predictive Power Score)
+
+您可能听说过相关矩阵。基本上，相关矩阵能够识别变量之间的线性关系。由于数据中的关系有时可能是非线性的（实际上大多数时候），我们可以使用 PPS（Predictive Power Score）矩阵来计算列之间的非线性关系。PPS 是一种非对称的、与数据类型无关的分数，可以检测两列之间的线性或非线性关系。分数范围从 0（无预测能力）到 1（完美预测能力）。它可以用作相关性（矩阵）的替代方法。
+
+如果想了解为什么PPS很重要，建议你阅读这篇文章：https://towardsdatascience.com/rip-correlation-introducing-the-predictive-power-score-3d90808b9598
+此外，请查阅 Python PPS 实现：https://github.com/8080labs/ppscore
+
+<details>
+    <summary> 点击展开代码 </summary>
+    
+``` python
+
+    """ 以下代码在jupyter notebook 上运行"""
+    df = pd.read_csv("./Titanic/train.csv")
+    matrix_df = ppscore.matrix(df)[["x", "y", "ppscore"]].pivot(columns="x", index="y", values="ppscore")
+    matrix_df = matrix_df.apply(lambda x: round(x, 2))  # Rounding matrix_df"s values to 0,XX
+    sns.heatmap(matrix_df, vmin=0, vmax=1, cmap="Blues", linewidths=0.75, annot=True)
+```
+</details>
+
+输出
+
+![](https://github.com/vivian315/KaggleEDA/blob/main/screenshots/p25.png?raw=true)
+
+查看此PPS矩阵，我们可以看到幸存变量的最佳单变量预测变量是列Ticket，0.19 pps ，其次是Sex，为0.13 pps 。这是有道理的， 因为妇女在救援过程中被优先考虑， 而且Ticket与Pclass密切相关。【Parch变量的最佳单变量预测变量是列Cabin，具有0.37pps】，等等。【】此处存疑？
+
+## 2、监督学习：分类
+
