@@ -344,4 +344,89 @@
 查看此PPS矩阵，我们可以看到幸存变量的最佳单变量预测变量是列Ticket，0.19 pps ，其次是Sex，为0.13 pps 。这是有道理的， 因为妇女在救援过程中被优先考虑， 而且Ticket与Pclass密切相关。【Parch变量的最佳单变量预测变量是列Cabin，具有0.37pps】，等等。【】此处存疑？
 
 ## 2、监督学习：分类
+我们使用的数据的上下文来深入了解建模部分。
+### 特征工程（Feature Engineering）
+为了帮助我们获得更好的性能，我们可以基于数据集的原始特征创建新要素。这里创建的一些新功能是基于Gunes Evitan在链接文章中的伟大想法：![Gunes Evitan的泰坦尼克号 - 高级特征工程教程](https://www.kaggle.com/gunesevitan/titanic-advanced-feature-engineering-tutorial#2.-Feature-Engineering)
 
+<details>
+    <summary> 点击展开代码 </summary>
+    
+``` python
+# 关闭 chained_assignments,
+# 否则出现警告"SettingWithCopyWarning: A value is trying to be set on a copy of a slice from a DataFrame
+pd.options.mode.chained_assignment = None
+
+df = pd.read_csv("./Titanic/train.csv")
+
+# 创建一个AgeCat分类列，18岁以下是young，18到56岁是mature，56岁以上是senior
+df['AgeCat'] = ''
+df['AgeCat'].loc[(df['Age'] < 18)] = 'young'
+df['AgeCat'].loc[(df['Age'] >= 18) & (df['Age'] < 56)] = 'mature'
+df['AgeCat'].loc[(df['Age'] >= 56)] = 'senior'
+
+# 创建 FamilySize分类列，小于2人是small，2到5人是medium，5人以上是large
+df['FamilySize'] = ''
+df['FamilySize'].loc[(df['SibSp'] <= 2)] = 'small'
+df['FamilySize'].loc[(df['SibSp'] > 2) & (df['SibSp'] <= 5 )] = 'medium'
+df['FamilySize'].loc[(df['SibSp'] > 5)] = 'large'
+
+# 创建 IsAlone分类列，标注是否为单人
+df['IsAlone'] = ''
+df['IsAlone'].loc[((df['SibSp'] + df['Parch']) > 0)] = 'no'
+df['IsAlone'].loc[((df['SibSp'] + df['Parch']) == 0)] = 'yes'
+
+# 创建SexCat分类列标注 Young/Mature/Senior 男士还是 Young/Mature/Senior 女士
+df['SexCat'] = ''
+df['SexCat'].loc[(df['Sex'] == 'male') & (df['Age'] <= 21)] = 'youngmale'
+df['SexCat'].loc[(df['Sex'] == 'male') & ((df['Age'] > 21) & (df['Age']) < 50)] = 'maturemale'
+df['SexCat'].loc[(df['Sex'] == 'male') & (df['Age'] > 50)] = 'seniormale'
+df['SexCat'].loc[(df['Sex'] == 'female') & (df['Age'] <= 21)] = 'youngfemale'
+df['SexCat'].loc[(df['Sex'] == 'female') & ((df['Age'] > 21) & (df['Age']) < 50)] = 'maturefemale'
+df['SexCat'].loc[(df['Sex'] == 'female') & (df['Age'] > 50)] = 'seniorfemale'
+
+
+# 创建title分类列，Title列值由Name的前缀提取
+# 另外创建Is_Married分类列，指明是否结婚，Mrstitle的幸存率高于其它女性title
+df['Title'] = df['Name'].str.split(', ', expand=True)[1].str.split('.', expand=True)[0]
+df['Is_Married'] = 0
+df['Is_Married'].loc[df['Title'] == 'Mrs'] = 1
+df['Title'] = df['Title'].replace(['Miss', 'Mrs','Ms', 'Mlle', 'Lady', 'Mme', 'the Countess', 'Dona'], 'Miss/Mrs/Ms')
+df['Title'] = df['Title'].replace(['Dr', 'Col', 'Major', 'Jonkheer', 'Capt', 'Sir', 'Don', 'Rev'], 'Dr/Military/Noble/Clergy')
+
+
+# 创建"Ticket Frequency"特征列
+# 有太多的票值需要分析，因此按频率对它们进行分组会使事情更容易
+df['Ticket_Frequency'] = df.groupby('Ticket')['Ticket'].transform('count')
+```
+</details>
+
+创建新特征列后，可以删除在训练过程中不使用的无用的列。
+
+<details>
+    <summary> 点击展开代码 </summary>
+
+``` python
+    # 拆分目标
+    target = df['Survived']
+
+    # 删除无用列
+    df.drop(['PassengerId', 'Survived', 'Ticket', 'Name', 'Cabin'], axis=1, inplace=True)
+
+    df.to_csv("./Titanic/train_target.csv")
+    # 拆分分类列和数值列
+    categorical_df = df.select_dtypes(include=['object'])
+    numeric_df = df.select_dtypes(exclude=['object'])
+
+    # 存储分类列和数字列的名称。
+    categorical_columns = list(categorical_df.columns)
+    numeric_columns = list(numeric_df.columns)
+
+    print("Categorical columns:\n", categorical_columns)
+    print("\nNumeric columns:\n", numeric_columns)
+
+    return target, categorical_columns, numeric_columns
+```
+</details>
+
+### 平衡数据
+正如我们在EDA部分看到的，train.csv的数据非常平衡，但我们的训练集中只有少量的观察。要尝试解决这个问题，我们可以采取不同的方法。三个常见方法是 RandomUnderSampling, SMOTE 和 SMOTEENN。我们可以尝试使用其中之一来平衡我们的数据。我们还可以选择不平衡数据，直接进入Pipeline部分。
