@@ -458,7 +458,13 @@ Pipeline2：通过计算每列的平均值来填充数字要素中的缺失值 -
 Pipeline3：通过计算每列的中位数来填充数字要素中的缺失值 - 应用MinMaxScaler - 将 OneHotEncoder 应用于分类要素 - 将数据拟合到具有 n_estimators = 100 的随机林分类器中。
 Pipeline4：通过计算每列的中位数来填充数字要素中的缺失值 - 应用StandardScaler - 将 OneHotEncoder 应用于分类要素 - 将数据拟合到具有 n_estimators = 150 的随机林分类器中。
 
+开始可能会认为要检查哪个Pipeline更好只需要手动创建所有这些管道，拟合数据然后评估结果。但是，如果我们想要增加这个搜索的范围，比如超过数百个不同的Pipeline呢？手动执行此操作真的很难。这就是 RandomSearchcv 发挥作用的地方。
 
+* 3 - 交叉验证时无信息泄漏
+这个有点棘手，特别对于初学者。基本上在交叉验证时数据应被转换到每个CV步骤中，而不是以前。转换训练集（例如使用StandardScaler）后执行交叉验证时，来自该集的信息将泄露到验证集。这可能会导致偏颇/不理想的结果。正确的做法是在交叉验证中规范化数据。这意味着对于每个CV步骤，一个Scaler仅适配到训练集上。然后，此Scaler转换验证集并评估模型。这样，训练集中的信息不会泄露到验证集。当使用RandomSearchCV（或GridSearchCV）内的Pipeline时，此问题将得到处理。
+这是机器学习中的一个关键概念，因此了解原因非常重要。建议阅读有关该主题的更深入的文章。此外，Andreas C. Muller & Sarah Guido 的《Python 机器学习导论》一书的第 6 章（主要是第 306 页和 307 页）给出了对这个问题的很好的看法。
+关于Pipelines和RandomSearchCV更多的信息请参照:![Pipelines](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
+![RandomizedSearchCV](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html)
 
 
 
